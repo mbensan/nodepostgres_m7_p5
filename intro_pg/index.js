@@ -29,10 +29,28 @@ async function leer () {
 }
 
 async function insertar (nombre, talla, color) {
-
+  /* Consulta Simple 
   const { rows } = await client.query(
     `insert into ropa (nombre, talla, color) values ('${nombre}', '${talla}', '${color}') returning *`
+  ) */
+  
+  // Consulta parametrizada
+  const { rows } = await client.query(
+    `insert into ropa (nombre, talla, color) values ($1, $2, $3) returning *`,
+    [nombre, talla, color]
   )
+  console.log(rows);
+  client.end()
+
+}
+
+async function editar (id, nombre, talla, color) {
+  
+  // Consulta parametrizada (forma alternativa)
+  const { rows } = await client.query({
+    text: `update ropa set nombre=$2, talla=$3, color=$4 where id=$1 returning *`,
+    values: [id, nombre, talla, color]
+  })
   console.log(rows);
   client.end()
 
@@ -52,6 +70,15 @@ function init () {
     const color = process.argv[5]
 
     insertar(nombre, talla, color)
+
+  } else if (accion == 'editar') {
+
+    const id = process.argv[3]
+    const nombre = process.argv[4]
+    const talla = process.argv[5]
+    const color = process.argv[6]
+
+    editar(id, nombre, talla, color)
 
   } else {
     console.log('Esta acción no existe.');
