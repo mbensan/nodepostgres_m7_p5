@@ -34,10 +34,20 @@ async function insertar(nombre, talla, color) {
   const client = await pool.connect()
 
   // 2. Consulta parametrizada
-  const { rows } = await client.query(
-    `insert into ropa (nombre, talla, color) values ($1, $2, $3) returning *`,
-    [nombre, talla, color]
-  )
+  try {
+    const { rows } = await client.query(
+      `insert into ropa (nombre, talla, color) values ($1, $2, $3) returning *`,
+      [nombre, talla, color]
+    )
+  } catch (error) {
+    
+    if (error.code == '23502') {
+      console.log(`La columna ${error.column} no puede tener valor NULO`)
+    }
+    else {
+      console.log(error)
+    }
+  }
   console.log(rows)
 
   // 3. Finalmente libero el cliente
