@@ -42,6 +42,38 @@ async function insertar (nombre, series, repeticiones, descanso) {
   return rows[0]
 }
 
+async function actualizar (nombre, series, repeticiones, descanso) {
+  // primero solicitamos un cliente
+  const client = await pool.connect()
+  
+  // después realizamos la consulta
+  const { rows } = await client.query({
+    text: `update ejercicios set series=$2, repeticiones=$3, descanso=$4 where nombre=$1
+           returning *`,
+    values: [nombre, parseInt(series), parseInt(repeticiones), parseInt(descanso)]
+  })
+
+  // más adelante liberamos el cliente
+  client.release()
+
+  return rows[0]
+}
+
+async function eliminar (nombre) {
+  // primero solicitamos un cliente
+  const client = await pool.connect()
+  
+  // después realizamos la consulta
+  await client.query({
+    text: `delete from ejercicios where nombre=$1`,
+    values: [nombre]
+  })
+
+  // más adelante liberamos el cliente
+  client.release()
+  return
+}
+
 async function consultar() {
   // primero solicitamos un cliente
   const client = await pool.connect()
@@ -56,4 +88,4 @@ async function consultar() {
 }
 
 
-module.exports = { get_now, insertar, consultar }
+module.exports = { get_now, insertar, consultar, actualizar, eliminar }
