@@ -223,9 +223,13 @@
           color,
         }),
       });
+      await response.json()
       $("form:first input:first").val("");
       $("form:first input:nth-child(2)").val("");
       $("form:first input:last").val("");
+      if (response.status==400){
+        alert('Este candidato ya se encuentra registrado') 
+      }
       location.reload();
     });
 
