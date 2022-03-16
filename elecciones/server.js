@@ -31,7 +31,6 @@ app.post('/candidato', async (req, res) => {
       await add_candidato(body.nombre, body.foto, body.color)
     } catch (error) {
       // acá gestiono los errores
-      console.log(error);
       if (error.code == '23505') {
         return res.status(400).send({mensaje: 'este nombre de candidato ya existe'})
       }
